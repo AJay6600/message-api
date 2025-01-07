@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const feedRouter = require("./routes/feed");
+const authRouter = require("./routes/auth");
 const mongoose = require("mongoose");
 const path = require("path");
 const multer = require("multer");
@@ -33,7 +34,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 /** middleware for accepting the data in format of jason */
-// app.use(bodyParser.json());
+app.use(bodyParser.json());
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
@@ -64,10 +65,15 @@ app.use(
 /** routes for feed */
 app.use("/feed", feedRouter);
 
+/** routes for authentication */
+app.use("/auth", authRouter);
+
 /** middleware that handles the error */
 app.use((err, req, res, next) => {
   console.log(err);
-  res.status(err.statusCode || 500).json({ messages: err.message });
+  res
+    .status(err.statusCode || 500)
+    .json({ messages: err.message, data: err.data });
 });
 
 /** connecting to mongodb */
