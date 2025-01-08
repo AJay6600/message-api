@@ -1,4 +1,5 @@
 const express = require("express");
+require("dotenv").config();
 const bodyParser = require("body-parser");
 const feedRouter = require("./routes/feed");
 const authRouter = require("./routes/auth");
@@ -77,10 +78,10 @@ app.use((err, req, res, next) => {
 
 /** connecting to mongodb */
 mongoose
-  .connect(
-    "mongodb+srv://contactajaymore:5snpCuJxvOGAmABW@cluster0.h2djow7.mongodb.net/messages?retryWrites=true&w=majority"
-  )
+  .connect(process.env.MONGO_URL)
   .then(() => {
-    app.listen(8000, () => {});
+    app.listen(process.env.PORT, () => {
+      console.log(`Server started on ${process.env.PORT}`);
+    });
   })
   .catch((err) => console.log(err));

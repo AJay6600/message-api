@@ -1,4 +1,5 @@
 const User = require("../models/user");
+require("dotenv").config();
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -85,7 +86,7 @@ const login = (req, res, next) => {
           email: loadedUser.email,
           id: loadedUser._id.toString(),
         },
-        "wesrcfgvbhnomk,pl[.;,[lmonibhuvgyfctdxrzse",
+        process.env.JWT_TOKEN,
         { expiresIn: "1h" }
       );
 
