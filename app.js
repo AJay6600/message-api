@@ -70,7 +70,6 @@ app.use("/auth", authRouter);
 
 /** middleware that handles the error */
 app.use((err, req, res, next) => {
-  console.log(err);
   res
     .status(err.statusCode || 500)
     .json({ messages: err.message, data: err.data });
@@ -82,8 +81,6 @@ mongoose
     "mongodb+srv://contactajaymore:5snpCuJxvOGAmABW@cluster0.h2djow7.mongodb.net/messages?retryWrites=true&w=majority"
   )
   .then(() => {
-    app.listen(8000, () => {
-      console.log("Server started on 8000 port");
-    });
+    app.listen(8000, () => {});
   })
   .catch((err) => console.log(err));
