@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 /** Middleware function to check for a valid user */
 module.exports = (req, res, next) => {
@@ -22,10 +23,7 @@ module.exports = (req, res, next) => {
 
   let decodedToken;
   try {
-    decodedToken = jwt.verify(
-      token,
-      "wesrcfgvbhnomk,pl[.;,[lmonibhuvgyfctdxrzse"
-    );
+    decodedToken = jwt.verify(token, process.env.JWT_TOKEN);
   } catch (err) {
     err.statusCode = 500;
     return next(err); // Pass the error to the next middleware
