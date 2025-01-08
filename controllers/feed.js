@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const Post = require("../models/post");
+const User = require("../models/user");
 const fs = require("fs");
 const path = require("path");
 
@@ -55,21 +56,32 @@ const createPost = (req, res, next) => {
 
   const imageUrl = req.file.path;
 
+  let creator;
+
   /** create the post */
   const post = new Post({
     title: title,
     content: content,
     imageUrl: imageUrl,
-    creator: { name: "Maximilian" },
+    creator: req.userId,
   });
 
   /** save the post */
   post
     .save()
     .then((result) => {
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      user.posts.push(post);
+      creator = user;
+      return user.save();
+    })
+    .then((result) => {
       res.status(201).json({
         message: "Post created successfully!",
-        post: result,
+        post: post,
+        creator: { _id: creator._id, name: creator.name },
       });
     })
     .catch((err) => {
@@ -144,6 +156,13 @@ const updatePost = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
+
+      if (result.creator.toString() !== req.userId) {
+        const error = new Error("Not authorized!");
+        error.statusCode = 403;
+        throw error;
+      }
+
       /** if updated image is not same as existing then delete the image from db */
       if (imageUrl !== result.imageUrl) {
         clearImage(result.imageUrl);
@@ -184,8 +203,24 @@ const deletePost = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
+      console.log("Cretor", post.creator.toString());
+      console.log("request id", req.userId);
+
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error("Not authorized!");
+        error.statusCode = 403;
+        throw error;
+      }
+
       clearImage(post.imageUrl);
       return Post.findByIdAndDelete(postId);
+    })
+    .then((result) => {
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      user.posts.pull(postId);
+      return user.save();
     })
     .then((result) => {
       res.status(200).json({ message: "post deleted" });

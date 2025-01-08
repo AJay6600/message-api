@@ -42,6 +42,6 @@ router.put(
 );
 
 /** delete the post */
-router.delete("/post/:postId", deletePost);
+router.delete("/post/:postId", isAuth, deletePost);
 
 module.exports = router;

@@ -38,6 +38,7 @@ module.exports = (req, res, next) => {
   }
 
   // Token is valid, attach user info to the request
-  req.userId = decodedToken.userId;
+  req.userId = decodedToken.id;
+
   next(); // Proceed to the next middleware or route handler
 };
